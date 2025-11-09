@@ -1,0 +1,20 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Connexion";
+}
+
+<h2>Connexion</h2>
+
+<form method="post" action="/Account/Login">
+    <div>
+        <label>Email :</label>
+        <input type="email" name="email" required />
+    </div>
+    <div>
+        <label>Mot de passe :</label>
+        <input type="password" name="password" required />
+    </div>
+    <div>
+        <button type="submit">Se connecter</button>
+    </div>
+</form>

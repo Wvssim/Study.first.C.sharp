@@ -1,0 +1,24 @@
+﻿@model List<MyShop.Models.Product>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Produits";
+}
+
+<h2>Produits</h2>
+
+<ul class="list-group">
+    @foreach (var product in Model)
+    {
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+                <a href="/Products/Details/@product.Id">@product.Name</a> - @product.Price DH
+            </div>
+            <div>
+                <a class="btn btn-success btn-sm" asp-controller="Cart" asp-action="AddToCart" asp-route-id="@product.Id">
+                    Ajouter au panier
+                </a>
+            </div>
+        </li>
+    }
+</ul>

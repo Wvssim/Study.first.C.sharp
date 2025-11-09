@@ -1,0 +1,28 @@
+﻿@model MyShop.Models.Product
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Ajouter un produit";
+}
+
+<h2>Ajouter un produit</h2>
+
+<form asp-action="Create" method="post">
+    <div>
+        <label>Nom :</label>
+        <input asp-for="Name" />
+    </div>
+    <div>
+        <label>Description :</label>
+        <input asp-for="Description" />
+    </div>
+    <div>
+        <label>Prix :</label>
+        <input asp-for="Price" type="number" step="0.01" />
+    </div>
+    <div>
+        <label>Stock :</label>
+        <input asp-for="Stock" type="number" />
+    </div>
+    <button type="submit">Ajouter</button>
+</form>
