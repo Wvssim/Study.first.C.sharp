@@ -1,4 +1,4 @@
-﻿namespace MyShop.Models
+﻿namespace MyMarket.Models
 {
     public class Product
     {

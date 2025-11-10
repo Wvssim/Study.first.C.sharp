@@ -1,15 +1,24 @@
+﻿using Microsoft.EntityFrameworkCore;
+using MyMarket.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// 1️⃣ Ajouter le contexte de base de données
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// 2️⃣ Ajouter la gestion de session
+builder.Services.AddSession();
+
+// 3️⃣ Ajouter les contrôleurs avec vues
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configuration du pipeline HTTP
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -17,6 +26,9 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+// 4️⃣ Activer la session AVANT l’autorisation
+app.UseSession();
 
 app.UseAuthorization();
 
