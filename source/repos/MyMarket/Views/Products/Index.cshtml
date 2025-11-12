@@ -26,19 +26,33 @@
             {
                 <div class="col-md-4 mb-4">
                     <div class="card h-100 shadow-sm border-0">
+                        <!-- 🖼️ Image du produit -->
+                        <div class="text-center bg-light" style="height: 200px; overflow: hidden;">
+                            <img src="@(string.IsNullOrWhiteSpace(product.ImageUrl) ? "/images/no-image.png" : product.ImageUrl)"
+                                 alt="@product.Name"
+                                 class="img-fluid rounded mt-2"
+                                 style="max-height: 180px; object-fit: contain;"
+                                 onerror="this.src='/images/no-image.png';" />
+                        </div>
+
                         <div class="card-body">
-                            <h5 class="card-title text-dark fw-bold">@product.Name</h5>
-                            <p class="card-text text-muted">@product.Description</p>
+                            <h5 class="card-title text-dark fw-bold mt-2">@product.Name</h5>
+                            <p class="card-text text-muted">
+                                @((product.Description?.Length > 100 ? product.Description.Substring(0, 100) + "..." : product.Description))
+                            </p>
                             <p class="fw-semibold text-success mb-3">@product.Price DH</p>
-                            <a href="/Products/Details/@product.Id" class="btn btn-outline-primary btn-sm me-2">
-                                🔍 Détails
-                            </a>
-                            <a asp-controller="Cart"
-                               asp-action="AddToCart"
-                               asp-route-id="@product.Id"
-                               class="btn btn-success btn-sm">
-                                ➕ Ajouter au panier
-                            </a>    
+
+                            <div class="d-flex justify-content-between">
+                                <a href="/Products/Details/@product.Id" class="btn btn-outline-primary btn-sm">
+                                    🔍 Détails
+                                </a>
+                                <a asp-controller="Cart"
+                                   asp-action="AddToCart"
+                                   asp-route-id="@product.Id"
+                                   class="btn btn-success btn-sm">
+                                    ➕ Ajouter au panier
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -46,3 +60,27 @@
         </div>
     }
 </div>
+
+<style>
+    .card {
+        border-radius: 12px;
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+
+        .card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+    .btn {
+        border-radius: 8px;
+    }
+
+    .img-fluid {
+        transition: transform 0.3s ease-in-out;
+    }
+
+        .img-fluid:hover {
+            transform: scale(1.05);
+        }
+</style>
