@@ -1,12 +1,66 @@
-﻿@{
+﻿@model List<MyMarket.Models.Product>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Accueil";
 }
 
-<div class="text-center mt-5">
-    <h1>Bienvenue sur <span class="text-primary">MyMarket</span> 🛒</h1>
-    <p class="lead">Votre boutique en ligne pour tout acheter facilement.</p>
-
-    <a class="btn btn-primary btn-lg mt-3" asp-controller="Products" asp-action="Index">
-        Voir les produits
-    </a>
+<!-- HERO -->
+<div class="p-5 mb-4 bg-light rounded-3 shadow-sm">
+    <h1 class="display-5 fw-bold">Bienvenue sur <span class="text-primary">MyMarket</span> 🛒</h1>
+    <p class="fs-4">Découvrez nos produits les plus récents.</p>
+    <a class="btn btn-primary btn-lg" href="/Products/Index">Voir tous les produits</a>
 </div>
+
+<!-- CATEGORIES -->
+<div class="container">
+    <h2 class="fw-bold text-center mb-4">Nos catégories</h2>
+    <div class="row text-center">
+        <div class="col-md-3 mb-3"><div class="card p-3 shadow-sm">📱 Smartphones</div></div>
+        <div class="col-md-3 mb-3"><div class="card p-3 shadow-sm">💻 Informatique</div></div>
+        <div class="col-md-3 mb-3"><div class="card p-3 shadow-sm">🎧 Accessoires</div></div>
+        <div class="col-md-3 mb-3"><div class="card p-3 shadow-sm">🛍️ Autres</div></div>
+    </div>
+</div>
+
+<!-- PRODUITS RÉCENTS -->
+<div class="container mt-5">
+    <h2 class="fw-bold text-center mb-4">🆕 Derniers produits ajoutés</h2>
+
+    @if (Model == null || !Model.Any())
+    {
+        <p class="text-center text-muted">Aucun produit pour le moment.</p>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var p in Model)
+            {
+                <div class="col-md-3 mb-4">
+                    <div class="card shadow-sm h-100">
+                        <img src="@(string.IsNullOrWhiteSpace(p.ImageUrl) ? "/images/no-image.png" : p.ImageUrl)"
+                             alt="@p.Name"
+                             class="card-img-top"
+                             style="height:180px; object-fit:contain;">
+                        <div class="card-body">
+                            <h5 class="fw-bold">@p.Name</h5>
+                            <p class="text-success fw-semibold">@p.Price DH</p>
+                            <a href="/Products/Details/@p.Id" class="btn btn-primary btn-sm">Voir</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<style>
+    .card {
+        border-radius: 12px;
+    }
+
+        .card:hover {
+            transform: scale(1.02);
+            transition: .2s;
+        }
+</style>

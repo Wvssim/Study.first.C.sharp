@@ -1,0 +1,89 @@
+﻿@model IEnumerable<MyMarket.Models.User>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Gestion des utilisateurs";
+}
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-primary">👥 Gestion des utilisateurs</h2>
+        <a href="/Admin/Dashboard" class="btn btn-outline-secondary">⬅️ Retour au dashboard</a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">Liste des comptes utilisateurs</h5>
+        </div>
+        <div class="card-body p-0">
+            @if (Model.Any())
+            {
+                <table class="table table-hover table-striped mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom d'utilisateur</th>
+                            <th>Email     </th>
+                            <th>Téléphone</th>
+                            <th>Rôle</th>
+                            <th class="text-center" style="width:180px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model)
+                        {
+                            <tr>
+                                <td>@user.Id</td>
+                                <td>
+                                   @user.FullName
+                                </td>
+                                <td>@user.Email</td>
+                                <td>
+                                    @user.PhoneNumber
+                                </td>
+                                <td>
+                                    <form method="post" asp-action="UpdateRole" asp-controller="Admin" class="d-flex align-items-center gap-2">
+                                        <input type="hidden" name="id" value="@user.Id" />
+                                        <select name="role" class="form-select form-select-sm">
+                                            <option value="User" selected="@("User" == user.Role)">User</option>
+                                            <option value="Admin" selected="@("Admin" == user.Role)">Admin</option>
+                                        </select>
+                                        <button type="submit" class="btn btn-success btn-sm">💾</button>
+                                    </form>
+                                </td>
+                                <td class="text-center">
+                                    <a asp-action="DeleteUser" asp-route-id="@user.Id"
+                                       class="btn btn-danger btn-sm"
+                                       onclick="return confirm('Supprimer cet utilisateur ?');">
+                                        🗑️ Supprimer
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="text-center py-4 text-muted">
+                    Aucun utilisateur enregistré.
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 10px;
+    }
+
+    select.form-select {
+        width: 100px;
+    }
+</style>

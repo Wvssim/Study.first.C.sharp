@@ -7,10 +7,21 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// 2️⃣ Ajouter la gestion de session
-builder.Services.AddSession();
+// 2️⃣ Ajouter la mémoire distribuée (obligatoire pour les sessions)
+builder.Services.AddDistributedMemoryCache();
 
-// 3️⃣ Ajouter les contrôleurs avec vues
+// 3️⃣ Ajouter la gestion de session
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Durée de validité
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
+// 4️⃣ Ajouter l’accès au HttpContext (✅ indispensable pour afficher les boutons Login/Register)
+builder.Services.AddHttpContextAccessor();
+
+// 5️⃣ Ajouter les contrôleurs avec vues
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
@@ -27,7 +38,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// 4️⃣ Activer la session AVANT l’autorisation
+// 6️⃣ Activer la session AVANT l’autorisation
 app.UseSession();
 
 app.UseAuthorization();

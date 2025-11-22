@@ -1,4 +1,12 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    var userEmail = HttpContextAccessor.HttpContext?.Session.GetString("UserEmail");
+    var userRole = HttpContextAccessor.HttpContext?.Session.GetString("UserRole");
+}
+
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="utf-8" />
@@ -9,36 +17,65 @@
 </head>
 
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <!-- 🔹 Barre de navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
-            <a class="navbar-brand" asp-controller="Home" asp-action="Index">🛍️ MyMarket</a>
+            <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">🛍️ MyMarket</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
+
             <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">🏠 Accueil</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Products" asp-action="Index">🛒 Produits</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Cart" asp-action="Index">🧺 Panier</a></li>
+
+                    @* Si admin, afficher le lien vers le Dashboard *@
+                    @if (userRole == "Admin")
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-warning fw-semibold" asp-controller="Admin" asp-action="Dashboard">⚙️ Dashboard</a>
+                        </li>
+                    }
+                </ul>
+
+                <!-- 🔐 Zone droite : Connexion / S’inscrire / Déconnexion -->
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Accueil</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-controller="Products" asp-action="Index">Produits</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-controller="Cart" asp-action="Index">Panier</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-controller="Admin" asp-action="Login">Connexion</a></li>
+                    @if (string.IsNullOrEmpty(userEmail))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-primary fw-semibold" asp-controller="Account" asp-action="Login">🔐 Connexion</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-success fw-semibold" asp-controller="Account" asp-action="Register">📝 S’inscrire</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <span class="nav-link text-success">👋 Bonjour, <strong>@userEmail</strong></span>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-danger fw-semibold" asp-controller="Account" asp-action="Logout">🚪 Déconnexion</a>
+                        </li>
+                    }
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- Contenu principal -->
+    <!-- 🔸 Contenu principal -->
     <div class="container my-4">
         @RenderBody()
     </div>
 
-    <!-- Footer -->
+    <!-- 🔻 Pied de page -->
     <footer class="bg-dark text-light text-center py-3 mt-4">
-        <p>&copy; @DateTime.Now.Year - MyMarket | Tous droits réservés.</p>
+        <p class="mb-0">&copy; @DateTime.Now.Year - MyMarket | Tous droits réservés.</p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     @RenderSection("Scripts", required: false)
-
 </body>
 </html>
