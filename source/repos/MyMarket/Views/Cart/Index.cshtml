@@ -1,4 +1,4 @@
-﻿@model List<MyMarket.Models.Product>
+﻿@model List<MyMarket.Models.CartItem>
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -6,6 +6,7 @@
 }
 
 <div class="container mt-5">
+
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold text-primary">🛒 Mon panier</h2>
         <a href="/Products" class="btn btn-outline-secondary">⬅️ Continuer mes achats</a>
@@ -20,6 +21,8 @@
     }
     else
     {
+        decimal total = Model.Sum(i => i.Product.Price * i.Quantity);
+
         <div class="card shadow-lg border-0">
             <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">Produits dans le panier</h5>
@@ -31,8 +34,9 @@
                     <thead class="table-dark">
                         <tr>
                             <th>Nom</th>
-                            <th>Description</th>
+                            <th>Quantité</th>
                             <th>Prix (DH)</th>
+                            <th>Total</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -40,15 +44,27 @@
                         @foreach (var item in Model)
                         {
                             <tr>
-                                <td>@item.Name</td>
-                                <td>@item.Description</td>
-                                <td>@item.Price</td>
+                                <td>@item.Product.Name</td>
+
+                                <td>
+                                    <!-- Boutons quantité -->
+                                    <a class="btn btn-sm btn-outline-primary" href="/Cart/AddToCart/@item.Product.Id">+</a>
+                                    <span class="mx-2">@item.Quantity</span>
+                                    <a class="btn btn-sm btn-outline-primary" href="/Cart/RemoveOne/@item.Product.Id">-</a>
+                                </td>
+
+                                <td>@item.Product.Price</td>
+
+                                <td>
+                                    @(@item.Product.Price* item.Quantity)
+                                </td>
+
                                 <td>
                                     <a asp-controller="Cart"
                                        asp-action="RemoveFromCart"
-                                       asp-route-id="@item.Id"
+                                       asp-route-id="@item.Product.Id"
                                        class="btn btn-danger btn-sm">
-                                        ❌ Supprimer
+                                        ❌
                                     </a>
                                 </td>
                             </tr>
@@ -58,10 +74,17 @@
             </div>
         </div>
 
+        <!-- TOTAL + PASSER COMMANDE -->
         <div class="d-flex justify-content-end mt-4">
-            <a href="#" class="btn btn-success btn-lg">
-                ✅ Passer la commande
-            </a>
+            <div class="text-end">
+                <h4 class="fw-bold">💵 Total : @total DH</h4>
+
+                <form asp-action="Checkout" method="post">
+                    <button type="submit" class="btn btn-success btn-lg mt-3">
+                        ✅ Passer la commande
+                    </button>
+                </form>
+            </div>
         </div>
     }
 </div>

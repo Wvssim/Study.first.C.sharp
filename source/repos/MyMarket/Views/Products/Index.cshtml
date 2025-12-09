@@ -6,12 +6,76 @@
 }
 
 <div class="container mt-5">
+
+    <!-- 🔍 BARRE DE RECHERCHE + FILTRES -->
+    <form method="get" class="mb-4 p-3 bg-light rounded shadow-sm">
+        <div class="row g-3">
+
+            <!-- Recherche -->
+            <div class="col-md-4">
+                <input type="text"
+                       name="search"
+                       class="form-control"
+                       placeholder="Rechercher un produit..."
+                       value="@ViewData["search"]" />
+            </div>
+
+            <!-- Catégorie -->
+            <div class="col-md-3">
+                <select name="category" class="form-select">
+                    <option value="">Toutes les catégories</option>
+
+                    <option value="Phone"
+                            selected="@(ViewData["category"]?.ToString() == "Phone")">
+                        Téléphones
+                    </option>
+
+                    <option value="AirPods"
+                            selected="@(ViewData["category"]?.ToString() == "AirPods")">
+                        AirPods
+                    </option>
+
+                    <option value="Accessoire"
+                            selected="@(ViewData["category"]?.ToString() == "Accessoire")">
+                        Accessoires
+                    </option>
+                </select>
+            </div>
+
+            <!-- Min Price -->
+            <div class="col-md-2">
+                <input type="number"
+                       name="minPrice"
+                       class="form-control"
+                       placeholder="Min"
+                       value="@ViewData["minPrice"]" />
+            </div>
+
+            <!-- Max Price -->
+            <div class="col-md-2">
+                <input type="number"
+                       name="maxPrice"
+                       class="form-control"
+                       placeholder="Max"
+                       value="@ViewData["maxPrice"]" />
+            </div>
+
+            <!-- Bouton -->
+            <div class="col-md-1">
+                <button type="submit" class="btn btn-primary w-100">OK</button>
+            </div>
+        </div>
+    </form>
+
+
+    <!-- 🛍️ Titre + panier -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold text-primary">🛍️ Liste des produits</h2>
         <a href="/Cart" class="btn btn-outline-dark">
             🛒 Voir le panier
         </a>
     </div>
+
 
     @if (Model == null || !Model.Any())
     {
@@ -26,7 +90,8 @@
             {
                 <div class="col-md-4 mb-4">
                     <div class="card h-100 shadow-sm border-0">
-                        <!-- 🖼️ Image du produit -->
+
+                        <!-- 🖼️ Image -->
                         <div class="text-center bg-light" style="height: 200px; overflow: hidden;">
                             <img src="@(string.IsNullOrWhiteSpace(product.ImageUrl) ? "/images/no-image.png" : product.ImageUrl)"
                                  alt="@product.Name"
@@ -37,15 +102,20 @@
 
                         <div class="card-body">
                             <h5 class="card-title text-dark fw-bold mt-2">@product.Name</h5>
+
                             <p class="card-text text-muted">
-                                @((product.Description?.Length > 100 ? product.Description.Substring(0, 100) + "..." : product.Description))
-                            </p>
+                                @((product.Description?.Length > 100
+                                                        ? product.Description.Substring(0, 100) + "..."
+                                                        : product.Description))
+                    </p>
+
                             <p class="fw-semibold text-success mb-3">@product.Price DH</p>
 
                             <div class="d-flex justify-content-between">
                                 <a href="/Products/Details/@product.Id" class="btn btn-outline-primary btn-sm">
                                     🔍 Détails
                                 </a>
+
                                 <a asp-controller="Cart"
                                    asp-action="AddToCart"
                                    asp-route-id="@product.Id"
@@ -54,9 +124,10 @@
                                 </a>
                             </div>
                         </div>
+
                     </div>
                 </div>
-            }
+                }
         </div>
     }
 </div>

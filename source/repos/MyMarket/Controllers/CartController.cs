@@ -10,21 +10,21 @@ namespace MyMarket.Controllers
     {
         private readonly ApplicationDbContext _context;
 
-        // 🧺 Panier temporaire stocké en mémoire
-        private static List<Product> cartItems = new List<Product>();
+        // 🧺 Panier stocké en mémoire (simple mais OK pour maintenant)
+        private static List<CartItem> cartItems = new List<CartItem>();
 
         public CartController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // ✅ Afficher le contenu du panier
+        // 🛒 Affichage du panier
         public IActionResult Index()
         {
             return View(cartItems);
         }
 
-        // ✅ Ajouter un produit à partir de la base
+        // ➕ Ajouter un produit (avec gestion de quantité)
         [HttpPost, HttpGet]
         public IActionResult AddToCart(int id)
         {
@@ -32,30 +32,107 @@ namespace MyMarket.Controllers
 
             if (product != null)
             {
-                cartItems.Add(product);
+                var item = cartItems.FirstOrDefault(c => c.Product.Id == id);
+
+                if (item == null)
+                {
+                    cartItems.Add(new CartItem { Product = product, Quantity = 1 });
+                }
+                else
+                {
+                    item.Quantity++;
+                }
             }
 
             return RedirectToAction("Index");
         }
 
+        // ❌ Retirer 1 quantité
+        public IActionResult RemoveOne(int id)
+        {
+            var item = cartItems.FirstOrDefault(c => c.Product.Id == id);
 
-        // ✅ Supprimer un produit du panier
+            if (item != null)
+            {
+                item.Quantity--;
+
+                if (item.Quantity <= 0)
+                {
+                    cartItems.Remove(item);
+                }
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        // ♻ Supprimer complètement l'article
         public IActionResult RemoveFromCart(int id)
         {
-            var product = cartItems.FirstOrDefault(p => p.Id == id);
-            if (product != null)
-            {
-                cartItems.Remove(product);
-            }
+            var item = cartItems.FirstOrDefault(c => c.Product.Id == id);
+
+            if (item != null)
+                cartItems.Remove(item);
 
             return RedirectToAction("Index");
         }
 
-        // ✅ Vider le panier
+        // ❌ Vider le panier
         public IActionResult ClearCart()
         {
             cartItems.Clear();
             return RedirectToAction("Index");
+        }
+
+        // 📦 PASSER COMMANDE (Checkout)
+        [HttpPost]
+        public IActionResult Checkout()
+        {
+            if (!cartItems.Any())
+            {
+                TempData["ErrorMessage"] = "Votre panier est vide.";
+                return RedirectToAction("Index");
+            }
+
+            // 🧾 Créer une commande
+            var order = new Order
+            {
+                OrderDate = DateTime.UtcNow,
+                TotalAmount = cartItems.Sum(i => i.Product.Price * i.Quantity),
+                Status = "Pending",
+                UserEmail = "client@test.com",
+                UserFullName = "Client",
+                UserPhone = "0000000000"
+            };
+
+            _context.Orders.Add(order);
+            _context.SaveChanges();
+
+            // ➕ Ajouter les OrderItem
+            foreach (var item in cartItems)
+            {
+                var orderItem = new OrderItem
+                {
+                    OrderId = order.Id,
+                    ProductId = item.Product.Id,
+                    Quantity = item.Quantity,
+                    UnitPrice = item.Product.Price
+                };
+
+                _context.OrderItems.Add(orderItem);
+            }
+
+            _context.SaveChanges();
+
+            // 🧹 Vider le panier
+            cartItems.Clear();
+
+            return RedirectToAction("OrderSuccess", new { id = order.Id });
+        }
+
+        // 🎉 Page de succès
+        public IActionResult OrderSuccess(int id)
+        {
+            return View(id);
         }
     }
 }

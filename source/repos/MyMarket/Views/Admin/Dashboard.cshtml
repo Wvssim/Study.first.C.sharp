@@ -11,7 +11,6 @@
         <h2 class="fw-bold text-primary">📊 Tableau de bord administrateur</h2>
         <div>
             <a href="/Admin/ManageUsers" class="btn btn-outline-primary me-2">👥 Gérer les utilisateurs</a>
-
             <a href="/Admin/Create" class="btn btn-success me-2">➕ Ajouter un produit</a>
             <a href="/Admin/Logout" class="btn btn-outline-danger">🚪 Déconnexion</a>
         </div>
@@ -28,6 +27,7 @@
             <h5 class="mb-0">🧾 Liste des produits</h5>
             <a href="/Admin/Create" class="btn btn-light btn-sm">+ Nouveau produit</a>
         </div>
+
         <div class="card-body p-0">
             @if (Model != null && Model.Any())
             {
@@ -49,14 +49,27 @@
                                 <td class="fw-semibold">@item.Name</td>
                                 <td class="text-success fw-bold">@item.Price</td>
                                 <td>@item.Description</td>
+
                                 <td class="text-center">
+
+                                    <!-- Bouton Modifier -->
                                     <a href="/Admin/Edit/@item.Id" class="btn btn-warning btn-sm me-2">
                                         ✏️ Modifier
                                     </a>
-                                    <a href="/Admin/Delete/@item.Id" class="btn btn-danger btn-sm"
-                                       onclick="return confirm('Voulez-vous vraiment supprimer ce produit ?');">
-                                        🗑️ Supprimer
-                                    </a>
+
+                                    <!-- Bouton Supprimer (POST Sécurisé) -->
+                                    <form asp-controller="Products"
+                                          asp-action="DeleteConfirmed"
+                                          asp-route-id="@item.Id"
+                                          method="post"
+                                          style="display:inline;"
+                                          onsubmit="return confirm('Voulez-vous vraiment supprimer ce produit ?');">
+
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-danger btn-sm">🗑️ Supprimer</button>
+
+                                    </form>
+
                                 </td>
                             </tr>
                         }
@@ -73,7 +86,7 @@
     </div>
 </div>
 
-<!-- Optionnel : petit effet visuel -->
+<!-- Styles optionnels -->
 <style>
     h2 {
         letter-spacing: 0.5px;

@@ -7,12 +7,15 @@
 
 <div class="container mt-5">
     <div class="card shadow-lg border-0">
+
         <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
             <h4 class="mb-0">✏️ Modifier le produit</h4>
             <a href="/Admin/Dashboard" class="btn btn-dark btn-sm">⬅️ Retour</a>
         </div>
 
         <div class="card-body">
+
+            <!-- FORMULAIRE DE MODIFICATION -->
             <form asp-action="Edit" asp-controller="Products" method="post">
                 <input type="hidden" asp-for="Id" />
 
@@ -59,8 +62,24 @@
                     <img id="preview" src="@Model.ImageUrl" class="img-thumbnail mt-2" style="width:150px;" />
                 </div>
 
+                <!-- Boutons -->
                 <div class="d-flex justify-content-end gap-2 mt-4">
+
+                    <!-- Bouton enregistrer -->
                     <button type="submit" class="btn btn-success">💾 Enregistrer</button>
+
+                    <!-- Bouton supprimer (POST sécurisé) -->
+                    <form asp-controller="Products"
+                          asp-action="DeleteConfirmed"
+                          asp-route-id="@Model.Id"
+                          method="post"
+                          onsubmit="return confirm('Voulez-vous vraiment supprimer ce produit ?');">
+
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-danger">🗑️ Supprimer</button>
+                    </form>
+
+                    <!-- Bouton annuler -->
                     <a href="/Admin/Dashboard" class="btn btn-secondary">❌ Annuler</a>
                 </div>
             </form>
